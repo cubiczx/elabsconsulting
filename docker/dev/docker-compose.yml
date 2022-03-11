@@ -1,0 +1,43 @@
+version: '2'
+services:
+  # The Application
+  elabs-test:
+    build: ./app
+    container_name: elabs-test
+    working_dir: /var/www/html
+    volumes:
+      - ../../:/var/www/html/prueba
+      - ./web/apache/dev/dev.conf:/etc/apache2/sites-enabled/prueba.conf
+      - ./app/config/config.ini:/usr/local/etc/php/conf.d/config.ini
+    ports:
+      - 8184:80
+      - 4543:443
+    networks:
+      - elabs_test
+
+  # Redis
+  elabs-redis-3.0:
+    image: redis:3.0
+    container_name: elabs-redis-3.0
+    ports:
+      - 63791:6379
+    restart: always
+    networks:
+      - elabs_test
+
+  mysql-test-5.7:
+    image: mysql:5.7
+    container_name: mysql-test-5.7
+    environment:
+      - "MYSQL_USER=root"
+      - "MYSQL_PASSWORD=elabstest123"
+      - "MYSQL_ROOT_PASSWORD=elabstest123"
+      - "MYSQL_ROOT_HOST=%"
+    ports:
+      - "33066:3306"
+    networks:
+      - elabs_test
+
+networks:
+  elabs_test:
+    driver: bridge
